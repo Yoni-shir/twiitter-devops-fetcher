@@ -14,7 +14,7 @@ def try_creating_kafka_consumer(broker, broker_port, topic, consumer_group):
 
     :returns: KafkaConsumer object
     """
-    retries = 6
+    retries = 8
     for i in range(retries):
         try:
             return KafkaConsumer(topic, group_id=consumer_group, bootstrap_servers=[f'{broker}:{broker_port}'])
