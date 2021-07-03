@@ -83,7 +83,7 @@ services:
       - "moby:127.0.0.1"
 
   producer:
-    image: yonis-test-producer:v1
+    image: yonishirman/twitter-fetcher:latest
     network_mode: host
     depends_on:
       - kafka-1
@@ -99,7 +99,7 @@ services:
       - "moby:127.0.0.1"
 
   consumer:
-    image: yonis-test-consumer:v1
+    image: yonishirman/kafka-consumer:latest
     network_mode: host
     depends_on:
       - kafka-1
