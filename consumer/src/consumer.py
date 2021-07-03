@@ -4,24 +4,35 @@ from time import sleep
 
 
 def try_creating_kafka_consumer(broker, broker_port, topic, consumer_group):
-        retries = 6
-        for i in range(retries):
-            try:
-                return KafkaConsumer(topic, group_id=consumer_group, bootstrap_servers=[f'{broker}:{broker_port}'])
-            except errors.NoBrokersAvailable:
-                sleep(10)
-        raise errors.NoBrokersAvailable
+    """
+    retries creation of kafka consumer connections until it succeeds or times out
+
+    :parameter str broker: dns or if of a kafka broker in the desired Kafka cluster
+    :parameter int broker_port: the listening port of the Kafka broker
+    :parameter str topic: topic name to consume from
+    :parameter str consumer_group: consumer group name
+
+    :returns: KafkaConsumer object
+    """
+    retries = 6
+    for i in range(retries):
+        try:
+            return KafkaConsumer(topic, group_id=consumer_group, bootstrap_servers=[f'{broker}:{broker_port}'])
+        except errors.NoBrokersAvailable:
+            sleep(10)
+    raise errors.NoBrokersAvailable
 
 
 if __name__ == '__main__':
 
+    # Initializing parameters from argparse
     kafka_host = args.kafka_host
     kafka_port = args.kafka_port
     kafka_topic = args.kafka_topic
     kafka_consumer_group = args.kafka_consumer_group
 
+    # creating KafkaConsumer object
     consumer = try_creating_kafka_consumer(kafka_host, kafka_port, kafka_topic, kafka_consumer_group)
+
     for message in consumer:
         print(message.value.decode('utf-8'))
-
-
