@@ -1,0 +1,17 @@
+FROM python:3.8-alpine
+
+ENV PYTHONPATH=. \
+    WORKDIR=/producer/
+
+RUN mkdir $WORKDIR
+
+WORKDIR $WORKDIR
+
+COPY entrypoint.sh \
+     src \
+     ./
+
+RUN pip install -r requirements.txt &&\
+    chmod +x ./entrypoint.sh
+
+ENTRYPOINT ["./entrypoint.sh"]

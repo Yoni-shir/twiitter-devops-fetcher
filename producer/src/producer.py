@@ -1,0 +1,39 @@
+import tweepy
+from configparser import ConfigParser
+from kafka import KafkaProducer, errors
+from time import sleep
+import re
+from json import dumps
+from config.conf import *
+import logging
+
+def try_creating_kafka_producer(broker, broker_port):
+    retries = 6
+    for i in range(retries):
+        try:
+            logging.error("attempt number: " + str(i+1) + " broker: " + broker + ":" + str(broker_port))
+            return KafkaProducer(bootstrap_servers=[f'{broker}:{broker_port}'], value_serializer=lambda x: dumps(x).encode('utf-8'))
+        except errors.NoBrokersAvailable:
+            sleep(10)
+    raise errors.NoBrokersAvailable
+
+
+if __name__ == '__main__':
+
+    kafka_host = args.kafka_host
+    kafka_port = args.kafka_port
+    consumer_key = args.consumer_key
+    consumer_secret = args.consumer_secret
+    kafka_topic = args.kafka_topic
+
+    producer = try_creating_kafka_producer(kafka_host, kafka_port)
+
+    auth = tweepy.AppAuthHandler(consumer_key, consumer_secret)
+    api = tweepy.API(auth, wait_on_rate_limit=True)
+
+    for tweet in tweepy.Cursor(api.search, q="#devops", lang="en").items():
+        producer.send(topic=kafka_topic, value=tweet.text.lower())
+        sleep(3)
+
+    producer.flush()
+
