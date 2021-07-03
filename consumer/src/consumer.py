@@ -1,6 +1,7 @@
 from kafka import KafkaConsumer, errors
 from config.conf import *
 from time import sleep
+import logging
 
 
 def try_creating_kafka_consumer(broker, broker_port, topic, consumer_group):
@@ -19,6 +20,7 @@ def try_creating_kafka_consumer(broker, broker_port, topic, consumer_group):
         try:
             return KafkaConsumer(topic, group_id=consumer_group, bootstrap_servers=[f'{broker}:{broker_port}'])
         except errors.NoBrokersAvailable:
+            logging.error("attempt number: " + str(i + 1) + " broker: " + broker + ":" + str(broker_port))
             sleep(10)
     raise errors.NoBrokersAvailable
 

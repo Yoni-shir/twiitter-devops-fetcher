@@ -1,5 +1,4 @@
 import tweepy
-from configparser import ConfigParser
 from kafka import KafkaProducer, errors
 from time import sleep
 import re
@@ -20,9 +19,9 @@ def try_creating_kafka_producer(broker, broker_port):
     retries = 6
     for i in range(retries):
         try:
-            logging.error("attempt number: " + str(i+1) + " broker: " + broker + ":" + str(broker_port))
             return KafkaProducer(bootstrap_servers=[f'{broker}:{broker_port}'], value_serializer=lambda x: dumps(x).encode('utf-8'))
         except errors.NoBrokersAvailable:
+            logging.error("attempt number: " + str(i+1) + " broker: " + broker + ":" + str(broker_port))
             sleep(10)
     raise errors.NoBrokersAvailable
 
@@ -48,7 +47,7 @@ if __name__ == '__main__':
                 "user": tweet.user.name,
                 "tweet_id": tweet.id,
                 "tweet_hashtags": re.findall("#([a-zA-Z0-9_]{1,50})", tweet.text)}
-        producer.send(topic=kafka_topic, value=tweet.text.lower())
+        producer.send(topic=kafka_topic, value=data)
         sleep(3)
 
     producer.flush()
