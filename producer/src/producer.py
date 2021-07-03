@@ -48,7 +48,6 @@ if __name__ == '__main__':
                 "user": tweet.user.name,
                 "tweet_id": tweet.id,
                 "tweet_hashtags": re.findall("#([a-zA-Z0-9_]{1,50})", tweet.text)}
-        print("sendig tweet to kafka: " + dumps(data, indent=4))
         producer.send(topic=kafka_topic, value=tweet.text.lower())
         sleep(3)
 

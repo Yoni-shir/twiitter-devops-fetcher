@@ -35,4 +35,4 @@ if __name__ == '__main__':
     consumer = try_creating_kafka_consumer(kafka_host, kafka_port, kafka_topic, kafka_consumer_group)
 
     for message in consumer:
-        print(message.value.decode('utf-8'))
+        print("reading from kafka: " + message.value.decode('utf-8'))
